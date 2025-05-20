@@ -103,7 +103,13 @@ export const useFileProcessor = ({ i18n, addLog }: UseFileProcessorProps) => {
             })
 
             console.log(`Adding result for file ${file.name}`)
-            return { fileName: file.name, result }
+            const res = result as ValidationResult
+            if (res.ids_error) {
+              const msg = `IDS parsing error in ${file.name}: ${res.ids_error}`
+              addLog(msg)
+              setUploadError(msg)
+            }
+            return { fileName: file.name, result: res }
           } catch (error: unknown) {
             console.error(`Error processing file ${file.name}:`, error)
             const errorDetails =

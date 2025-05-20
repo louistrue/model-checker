@@ -73,4 +73,5 @@ export interface ValidationResult {
     zip_content: string
     filename: string
   }
+  ids_error?: string
 }
