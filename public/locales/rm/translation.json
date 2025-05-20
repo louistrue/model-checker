@@ -203,5 +203,14 @@
       "processingComplete": "Tias datotecas èn vegnidas elavuradas.",
       "validationComplete": "Validaziun terminada! Guarda ils resultats sutvart."
     }
-  }
+  },
+  "ids-audit": {
+    "title": "IDS Audit",
+    "button": "Check IDS file",
+    "invalid": "The IDS file contains errors:",
+    "valid": "The IDS file is syntactically valid.",
+    "running": "Checking IDS...",
+    "invalid-short": "Invalid IDS file"
+  },
+  "close": "Close"
 }

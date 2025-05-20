@@ -16,6 +16,8 @@ import {
 } from './components'
 import { UploadCardTitle } from './UploadCardTitle.tsx'
 import { useFileProcessor, useHtmlReport } from './hooks'
+import { IdsAuditModal } from '@components/IdsAudit'
+import { auditIds } from '@utils/idsAudit'
 import { FileError } from './hooks/useFileProcessor'
 
 export const UploadCard = () => {
@@ -33,6 +35,8 @@ export const UploadCard = () => {
     html: true,
     bcf: false,
   })
+  const [auditOpen, setAuditOpen] = useState(false)
+  const [idsContent, setIdsContent] = useState<string | null>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
 
   const addLog = (message: string) => {
@@ -108,6 +112,14 @@ export const UploadCard = () => {
     setProcessedResults([])
 
     if (isIdsValidation && idsFile) {
+      if (idsContent) {
+        const audit = await auditIds(idsContent)
+        if (!audit.valid) {
+          setAuditOpen(true)
+          setUploadError(t('ids-audit.invalid-short', 'Invalid IDS file'))
+          return
+        }
+      }
       if (!ifcFiles.length) return
       await processFiles(ifcFiles, idsFile, isIdsValidation)
     } else {
@@ -129,7 +141,9 @@ export const UploadCard = () => {
 
   const handleIdsDrop = (acceptedFiles: File[]) => {
     setErrors([])
-    setIdsFile(acceptedFiles[0])
+    const file = acceptedFiles[0]
+    setIdsFile(file)
+    file.text().then((t) => setIdsContent(t)).catch(() => setIdsContent(null))
   }
 
   const handleReject = (fileRejections: FileRejection[]) => {
@@ -168,6 +182,10 @@ export const UploadCard = () => {
             />
           </Box>
 
+          {isIdsValidation && idsFile && (
+            <Button variant='light' onClick={() => setAuditOpen(true)}>{t('ids-audit.button', 'Check IDS file')}</Button>
+          )}
+
           <ErrorDisplay errors={errors} uploadProgress={uploadProgress} uploadError={uploadError} />
 
           <ProcessingConsole isProcessing={isProcessing} logs={processingLogs} />
@@ -203,6 +221,7 @@ export const UploadCard = () => {
           >
             {isProcessing ? 'Processing...' : t('validate')}
           </Button>
+          <IdsAuditModal opened={auditOpen} onClose={() => setAuditOpen(false)} idsContent={idsContent} />
         </Stack>
       </Paper>
     </Stack>

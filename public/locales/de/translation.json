@@ -202,5 +202,14 @@
       "processingComplete": "Ihre Dateien wurden verarbeitet.",
       "validationComplete": "Validierung abgeschlossen! Sehen Sie sich die Ergebnisse unten an."
     }
-  }
+  },
+  "ids-audit": {
+    "title": "IDS Audit",
+    "button": "Check IDS file",
+    "invalid": "The IDS file contains errors:",
+    "valid": "The IDS file is syntactically valid.",
+    "running": "Checking IDS...",
+    "invalid-short": "Invalid IDS file"
+  },
+  "close": "Close"
 }

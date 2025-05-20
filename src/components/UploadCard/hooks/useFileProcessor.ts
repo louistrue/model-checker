@@ -65,6 +65,9 @@ export const useFileProcessor = ({ i18n, addLog }: UseFileProcessorProps) => {
               worker.onmessage = (event) => {
                 if (event.data.type === 'progress') {
                   addLog(event.data.message)
+                } else if (event.data.type === 'ids-error') {
+                  setUploadError(event.data.message)
+                  reject(new Error(event.data.message))
                 } else if (event.data.type === 'error') {
                   // Check if this is an out of memory error
                   if (event.data.errorType === 'out_of_memory') {

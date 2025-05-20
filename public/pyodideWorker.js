@@ -501,6 +501,8 @@ import base64
 import re
 from datetime import datetime
 
+ids_error = None
+
 # Open the IFC model from the virtual file system
 model = ifcopenshell.open("model.ifc")
 
@@ -597,7 +599,8 @@ if os.path.exists("spec.ids"):
         # 5. Validate specifications against the model
         ids.validate(model)
     except Exception as e:
-        print(f"IDS Parsing Error: {str(e)}")
+        ids_error = str(e)
+        print(f"IDS Parsing Error: {ids_error}")
         # Fallback to empty specs on error
         ids = Ids()
         ids.specifications = []
@@ -691,6 +694,9 @@ results['bcf_data'] = {"zip_content": bcf_b64, "filename": report_file_name + ".
 results['html_content'] = html_content
 results['language_code'] = language_code
 
+# Include IDS parsing errors if any
+results['ids_error'] = ids_error
+
 # Add UI language information to results
 results['ui_language'] = "${effectiveLanguage}"
 results['available_languages'] = ${JSON.stringify(Object.keys(translations))}
@@ -774,6 +780,9 @@ validation_result_json = json.dumps(results, default=str, ensure_ascii=False)
       results.html_content = results.html_content.replace('<head>', '<head>' + tableStyles)
     }
 
+    if (results.ids_error) {
+      self.postMessage({ type: 'ids-error', message: results.ids_error })
+    }
     self.postMessage({
       type: 'complete',
       results: results,
