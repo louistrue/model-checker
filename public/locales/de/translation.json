@@ -117,6 +117,12 @@
   "view-html": "HTML",
   "download-bcf": "BCF",
   "select-report-format": "Bitte wählen Sie mindestens ein Berichtsformat aus",
+  "ids-audit-modal": {
+    "title": "IDS-Datei prüfen",
+    "text": "Sie haben eine IDS-Datei hochgeladen. Vor der Modellprüfung können Sie diese mit einem IDS-Audit überprüfen. Möchten Sie zuerst das IDS-Audit ausführen?",
+    "confirm": "IDS auditieren",
+    "skip": "Überspringen"
+  },
   "report": {
     "summary": "Zusammenfassung",
     "specifications": "Spezifikationen",

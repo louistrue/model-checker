@@ -125,6 +125,12 @@
   "view-html": "HTML",
   "download-bcf": "BCF",
   "select-report-format": "Please select at least one report format",
+  "ids-audit-modal": {
+    "title": "Audit IDS File",
+    "text": "You uploaded an IDS file. Before running the model check you can audit it to ensure it is valid. Do you want to run the IDS audit first?",
+    "confirm": "Audit IDS",
+    "skip": "Skip"
+  },
   "report": {
     "summary": "Summary",
     "specifications": "Specifications",

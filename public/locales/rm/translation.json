@@ -118,6 +118,12 @@
   "view-html": "HTML",
   "download-bcf": "BCF",
   "select-report-format": "Tscherna almain in format da rapport",
+  "ids-audit-modal": {
+    "title": "Controllar il file IDS",
+    "text": "Ti has chargià in file IDS. Avant che il model vegnia controllà pos ti far in audit per confirmar ch'el è valid. Vuls far l'audit IDS sco emprim?",
+    "confirm": "Auditar IDS",
+    "skip": "Spitgar"
+  },
   "report": {
     "summary": "Resumaziun",
     "specifications": "Specificaziuns",

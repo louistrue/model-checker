@@ -118,6 +118,12 @@
   "view-html": "HTML",
   "download-bcf": "BCF",
   "select-report-format": "Seleziona almeno un formato di rapporto",
+  "ids-audit-modal": {
+    "title": "Verifica file IDS",
+    "text": "Hai caricato un file IDS. Prima di eseguire il controllo del modello puoi verificarlo per assicurarti che sia valido. Vuoi eseguire prima l'audit IDS?",
+    "confirm": "Audita IDS",
+    "skip": "Salta"
+  },
   "report": {
     "summary": "Riepilogo",
     "specifications": "Specifiche",

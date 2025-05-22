@@ -12,6 +12,7 @@ import {
   ProcessingConsole,
   ReportFormatOptions,
   ResultsDisplay,
+  IdsAuditModal,
   UploadInstructions,
 } from './components'
 import { UploadCardTitle } from './UploadCardTitle.tsx'
@@ -29,6 +30,7 @@ export const UploadCard = () => {
   const [isIdsValidation, setIsIdsValidation] = useState(false)
   const [processingLogs, setProcessingLogs] = useState<string[]>([])
   const [templateContent, setTemplateContent] = useState<string | null>(null)
+  const [showAuditModal, setShowAuditModal] = useState(false)
   const [reportFormats, setReportFormats] = useState({
     html: true,
     bcf: false,
@@ -130,6 +132,9 @@ export const UploadCard = () => {
   const handleIdsDrop = (acceptedFiles: File[]) => {
     setErrors([])
     setIdsFile(acceptedFiles[0])
+    if (!sessionStorage.getItem('idsAuditPromptShown')) {
+      setShowAuditModal(true)
+    }
   }
 
   const handleReject = (fileRejections: FileRejection[]) => {
@@ -142,8 +147,20 @@ export const UploadCard = () => {
     )
   }
 
+  const handleAuditConfirm = () => {
+    sessionStorage.setItem('idsAuditPromptShown', 'true')
+    setShowAuditModal(false)
+    // Placeholder for future IDS audit integration
+  }
+
+  const handleAuditSkip = () => {
+    sessionStorage.setItem('idsAuditPromptShown', 'true')
+    setShowAuditModal(false)
+  }
+
   return (
     <Stack maw={800} mx='auto' style={{ width: '100%', paddingTop: '30px' }}>
+      <IdsAuditModal opened={showAuditModal} onConfirm={handleAuditConfirm} onSkip={handleAuditSkip} />
       <Paper p='md' radius='md' shadow='sm' withBorder>
         <Stack gap='md'>
           <UploadCardTitle isIdsValidation={isIdsValidation} />
