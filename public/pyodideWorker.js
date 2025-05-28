@@ -506,6 +506,7 @@ model = ifcopenshell.open("model.ifc")
 
 # Create and load IDS specification
 from ifctester.ids import Ids, get_schema
+from ifcopenshell.util.schema import get_fallback_schema
 import xml.etree.ElementTree as ET
 
 # Register XML namespaces for correct parsing
@@ -534,6 +535,17 @@ if os.path.exists("spec.ids"):
         # If "@ifcVersion" is missing, add a default list of supported versions
         if "@ifcVersion" not in decoded:
             decoded["@ifcVersion"] = ["IFC2X3", "IFC4", "IFC4X3_ADD2"]
+        else:
+            versions = decoded["@ifcVersion"]
+            if isinstance(versions, str):
+                versions = [versions]
+            normalized = []
+            for v in versions:
+                try:
+                    normalized.append(get_fallback_schema(v).name)
+                except Exception:
+                    normalized.append(v)
+            decoded["@ifcVersion"] = normalized
             
         # 3.5 Process schema values for proper type conversion and format simplification
         def process_schema_values(obj):
