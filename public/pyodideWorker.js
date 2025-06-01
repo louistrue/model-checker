@@ -495,14 +495,29 @@ print("Finished attempting to install ifctester 0.8.1, bcf-client 0.8.1 and depe
     })
     await pyodide.runPythonAsync(`
 import ifcopenshell
+from ifcopenshell.util.schema import get_fallback_schema
 import os
 import json
 import base64
 import re
 from datetime import datetime
 
-# Open the IFC model from the virtual file system
-model = ifcopenshell.open("model.ifc")
+# Determine schema from the IFC header and open with fallback
+schema_name = None
+with open("model.ifc", "r", errors="ignore") as f:
+    header_data = f.read(1024)
+    match = re.search(r"FILE_SCHEMA\(\('([^']+)'\)\)", header_data, re.IGNORECASE)
+    if match:
+        schema_name = match.group(1)
+
+if schema_name:
+    try:
+        fallback = get_fallback_schema(schema_name).name
+        model = ifcopenshell.open("model.ifc", fallback)
+    except Exception:
+        model = ifcopenshell.open("model.ifc")
+else:
+    model = ifcopenshell.open("model.ifc")
 
 # Create and load IDS specification
 from ifctester.ids import Ids, get_schema
@@ -534,6 +549,17 @@ if os.path.exists("spec.ids"):
         # If "@ifcVersion" is missing, add a default list of supported versions
         if "@ifcVersion" not in decoded:
             decoded["@ifcVersion"] = ["IFC2X3", "IFC4", "IFC4X3_ADD2"]
+        else:
+            versions = decoded["@ifcVersion"]
+            if isinstance(versions, str):
+                versions = [versions]
+            normalized = []
+            for v in versions:
+                try:
+                    normalized.append(get_fallback_schema(v).name)
+                except Exception:
+                    normalized.append(v)
+            decoded["@ifcVersion"] = normalized
             
         # 3.5 Process schema values for proper type conversion and format simplification
         def process_schema_values(obj):
