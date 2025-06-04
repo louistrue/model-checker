@@ -170,8 +170,19 @@ def test_ifc(ifc_path: str, ids_path: str, report_path: str = "report.html", lan
             ifc_model = ifcopenshell.open(ifc_path)
         except Exception:
             if schema_id:
-                fallback = get_fallback_schema(schema_id)
-                ifc_model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, fallback))
+                try:
+                    fallback = get_fallback_schema(schema_id)
+                except Exception:
+                    fallback = "IFC4"
+
+                try:
+                    ifc_model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, fallback))
+                except Exception:
+                    if fallback != "IFC4":
+                        # last resort fallback to IFC4
+                        ifc_model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, "IFC4"))
+                    else:
+                        raise
             else:
                 raise
         

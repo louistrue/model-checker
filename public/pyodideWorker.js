@@ -506,7 +506,7 @@ from ifcopenshell.util.schema import get_fallback_schema
 with open("model.ifc", "r", encoding="utf-8", errors="ignore") as fh:
     ifc_data = fh.read()
 
-match = re.search(r"FILE_SCHEMA\s*\(\s*\(?['\"]([^'\"]+)['\"]\)?", ifc_data, re.IGNORECASE)
+match = re.search(r"FILE_SCHEMA\\s*\\(\\s*\\(?['\\"]([^'\\"]+)['\\"]\\)?", ifc_data, re.IGNORECASE)
 schema_id = match.group(1) if match else None
 
 try:
@@ -515,9 +515,17 @@ except Exception:
     if schema_id:
         try:
             fallback = get_fallback_schema(schema_id)
+        except Exception:
+            fallback = "IFC4"
+
+        try:
             model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, fallback))
         except Exception:
-            raise
+            if fallback != "IFC4":
+                # last resort fallback to IFC4
+                model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, "IFC4"))
+            else:
+                raise
     else:
         raise
 
