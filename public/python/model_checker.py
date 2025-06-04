@@ -68,7 +68,32 @@ def check_dependencies():
 check_dependencies()
 
 import ifcopenshell
+from ifcopenshell.util.schema import get_fallback_schema
 from ifctester import ids, reporter
+
+
+def normalize_schema(version: str | None) -> str:
+    """Return a supported IFC schema identifier.
+
+    Attempts ``get_fallback_schema`` first and then falls back to a
+    generic regex based extraction. If all else fails ``IFC4`` is used.
+    """
+
+    if not version:
+        return "IFC4"
+
+    try:
+        candidate = get_fallback_schema(version)
+        if candidate != version:
+            return candidate
+    except Exception:
+        pass
+
+    m = re.match(r"(IFC\d+(?:X\d+)?)(?:_.*)?", version.upper())
+    if m:
+        return m.group(1)
+
+    return "IFC4"
 
 def translate_html_report(html_content, lang):
     """
@@ -155,7 +180,32 @@ def test_ifc(ifc_path: str, ids_path: str, report_path: str = "report.html", lan
             raise FileNotFoundError(f"IDS file not found: {ids_path}")
 
         print(f"Opening IFC file: {ifc_path}")
-        ifc_model = ifcopenshell.open(ifc_path)
+
+        # Read IFC content to allow schema fallback if needed
+        with open(ifc_path, "r", encoding="utf-8", errors="ignore") as fh:
+            ifc_data = fh.read()
+
+        schema_id = None
+        match = re.search(r"FILE_SCHEMA\s*\(\s*\(?['\"]([^'\"]+)['\"]\)?", ifc_data, re.IGNORECASE)
+        if match:
+            schema_id = match.group(1)
+
+        try:
+            ifc_model = ifcopenshell.open(ifc_path)
+        except Exception:
+            if schema_id:
+                fallback = normalize_schema(schema_id)
+
+                try:
+                    ifc_model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, fallback))
+                except Exception:
+                    if fallback != "IFC4":
+                        # last resort fallback to IFC4
+                        ifc_model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, "IFC4"))
+                    else:
+                        raise
+            else:
+                raise
         
         print(f"Loading IDS specification: {ids_path}")
         ids_spec = ids.open(ids_path)

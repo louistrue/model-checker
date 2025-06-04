@@ -500,9 +500,45 @@ import json
 import base64
 import re
 from datetime import datetime
+from ifcopenshell.util.schema import get_fallback_schema
 
-# Open the IFC model from the virtual file system
-model = ifcopenshell.open("model.ifc")
+def normalize_schema(version: str | None) -> str:
+    if not version:
+        return "IFC4"
+    try:
+        candidate = get_fallback_schema(version)
+        if candidate != version:
+            return candidate
+    except Exception:
+        pass
+    m = re.match(r"(IFC\d+(?:X\d+)?)(?:_.*)?", version.upper())
+    if m:
+        return m.group(1)
+    return "IFC4"
+
+# Read the IFC file so we can retry with a fallback schema if needed
+with open("model.ifc", "r", encoding="utf-8", errors="ignore") as fh:
+    ifc_data = fh.read()
+
+match = re.search(r"FILE_SCHEMA\\s*\\(\\s*\\(?['\\"]([^'\\"]+)['\\"]\\)?", ifc_data, re.IGNORECASE)
+schema_id = match.group(1) if match else None
+
+try:
+    model = ifcopenshell.open("model.ifc")
+except Exception:
+    if schema_id:
+        fallback = normalize_schema(schema_id)
+
+        try:
+            model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, fallback))
+        except Exception:
+            if fallback != "IFC4":
+                # last resort fallback to IFC4
+                model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, "IFC4"))
+            else:
+                raise
+    else:
+        raise
 
 # Create and load IDS specification
 from ifctester.ids import Ids, get_schema
