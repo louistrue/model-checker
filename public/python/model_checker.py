@@ -68,6 +68,7 @@ def check_dependencies():
 check_dependencies()
 
 import ifcopenshell
+from ifcopenshell.util.schema import get_fallback_schema
 from ifctester import ids, reporter
 
 def translate_html_report(html_content, lang):
@@ -155,7 +156,24 @@ def test_ifc(ifc_path: str, ids_path: str, report_path: str = "report.html", lan
             raise FileNotFoundError(f"IDS file not found: {ids_path}")
 
         print(f"Opening IFC file: {ifc_path}")
-        ifc_model = ifcopenshell.open(ifc_path)
+
+        # Read IFC content to allow schema fallback if needed
+        with open(ifc_path, "r", encoding="utf-8", errors="ignore") as fh:
+            ifc_data = fh.read()
+
+        schema_id = None
+        match = re.search(r"FILE_SCHEMA\s*\(\s*\(?['\"]([^'\"]+)['\"]\)?", ifc_data, re.IGNORECASE)
+        if match:
+            schema_id = match.group(1)
+
+        try:
+            ifc_model = ifcopenshell.open(ifc_path)
+        except Exception:
+            if schema_id:
+                fallback = get_fallback_schema(schema_id)
+                ifc_model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, fallback))
+            else:
+                raise
         
         print(f"Loading IDS specification: {ids_path}")
         ids_spec = ids.open(ids_path)

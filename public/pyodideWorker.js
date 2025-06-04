@@ -500,9 +500,26 @@ import json
 import base64
 import re
 from datetime import datetime
+from ifcopenshell.util.schema import get_fallback_schema
 
-# Open the IFC model from the virtual file system
-model = ifcopenshell.open("model.ifc")
+# Read the IFC file so we can retry with a fallback schema if needed
+with open("model.ifc", "r", encoding="utf-8", errors="ignore") as fh:
+    ifc_data = fh.read()
+
+match = re.search(r"FILE_SCHEMA\s*\(\s*\(?['\"]([^'\"]+)['\"]\)?", ifc_data, re.IGNORECASE)
+schema_id = match.group(1) if match else None
+
+try:
+    model = ifcopenshell.open("model.ifc")
+except Exception:
+    if schema_id:
+        try:
+            fallback = get_fallback_schema(schema_id)
+            model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, fallback))
+        except Exception:
+            raise
+    else:
+        raise
 
 # Create and load IDS specification
 from ifctester.ids import Ids, get_schema
