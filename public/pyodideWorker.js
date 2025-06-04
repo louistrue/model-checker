@@ -502,6 +502,20 @@ import re
 from datetime import datetime
 from ifcopenshell.util.schema import get_fallback_schema
 
+def normalize_schema(version: str | None) -> str:
+    if not version:
+        return "IFC4"
+    try:
+        candidate = get_fallback_schema(version)
+        if candidate != version:
+            return candidate
+    except Exception:
+        pass
+    m = re.match(r"(IFC\d+(?:X\d+)?)(?:_.*)?", version.upper())
+    if m:
+        return m.group(1)
+    return "IFC4"
+
 # Read the IFC file so we can retry with a fallback schema if needed
 with open("model.ifc", "r", encoding="utf-8", errors="ignore") as fh:
     ifc_data = fh.read()
@@ -513,10 +527,7 @@ try:
     model = ifcopenshell.open("model.ifc")
 except Exception:
     if schema_id:
-        try:
-            fallback = get_fallback_schema(schema_id)
-        except Exception:
-            fallback = "IFC4"
+        fallback = normalize_schema(schema_id)
 
         try:
             model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, fallback))

@@ -71,6 +71,30 @@ import ifcopenshell
 from ifcopenshell.util.schema import get_fallback_schema
 from ifctester import ids, reporter
 
+
+def normalize_schema(version: str | None) -> str:
+    """Return a supported IFC schema identifier.
+
+    Attempts ``get_fallback_schema`` first and then falls back to a
+    generic regex based extraction. If all else fails ``IFC4`` is used.
+    """
+
+    if not version:
+        return "IFC4"
+
+    try:
+        candidate = get_fallback_schema(version)
+        if candidate != version:
+            return candidate
+    except Exception:
+        pass
+
+    m = re.match(r"(IFC\d+(?:X\d+)?)(?:_.*)?", version.upper())
+    if m:
+        return m.group(1)
+
+    return "IFC4"
+
 def translate_html_report(html_content, lang):
     """
     Translate key phrases in the HTML report based on the language.
@@ -170,10 +194,7 @@ def test_ifc(ifc_path: str, ids_path: str, report_path: str = "report.html", lan
             ifc_model = ifcopenshell.open(ifc_path)
         except Exception:
             if schema_id:
-                try:
-                    fallback = get_fallback_schema(schema_id)
-                except Exception:
-                    fallback = "IFC4"
+                fallback = normalize_schema(schema_id)
 
                 try:
                     ifc_model = ifcopenshell.file.from_string(ifc_data.replace(schema_id, fallback))
