@@ -499,10 +499,28 @@ import os
 import json
 import base64
 import re
-from datetime import datetime
 
-# Open the IFC model from the virtual file system
-model = ifcopenshell.open("model.ifc")
+from datetime import datetime
+from ifcopenshell.util.schema import get_fallback_schema
+
+# Open the IFC model from the virtual file system with schema fallback
+schema_id = None
+try:
+    with open("model.ifc", "r", encoding="utf-8", errors="ignore") as fh:
+        header = fh.read(1024)
+        m = re.search(r"FILE_SCHEMA\s*\(\s*\(?['\"]([^'\"]+)['\"]\)?", header, re.IGNORECASE)
+        if m:
+            schema_id = m.group(1)
+    model = ifcopenshell.open("model.ifc")
+except Exception:
+    if schema_id:
+        try:
+            fallback = get_fallback_schema(schema_id)
+            model = ifcopenshell.open("model.ifc", schema=fallback)
+        except Exception:
+            raise
+    else:
+        raise
 
 # Create and load IDS specification
 from ifctester.ids import Ids, get_schema
@@ -534,6 +552,17 @@ if os.path.exists("spec.ids"):
         # If "@ifcVersion" is missing, add a default list of supported versions
         if "@ifcVersion" not in decoded:
             decoded["@ifcVersion"] = ["IFC2X3", "IFC4", "IFC4X3_ADD2"]
+        else:
+            versions = decoded["@ifcVersion"]
+            if isinstance(versions, str):
+                versions = [versions]
+            normalized = []
+            for v in versions:
+                try:
+                    normalized.append(get_fallback_schema(v).name)
+                except Exception:
+                    normalized.append(v)
+            decoded["@ifcVersion"] = normalized
             
         # 3.5 Process schema values for proper type conversion and format simplification
         def process_schema_values(obj):
