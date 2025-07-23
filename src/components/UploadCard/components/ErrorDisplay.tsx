@@ -1,4 +1,4 @@
-import { Alert, Progress, Text, Box } from '@mantine/core'
+import { Alert, Progress, Text, Box, Group, Button } from '@mantine/core'
 import { useTranslation } from 'react-i18next'
 import { FileError } from '../hooks/useFileProcessor'
 
@@ -6,9 +6,11 @@ interface ErrorDisplayProps {
   errors: FileError[] | null
   uploadProgress: number
   uploadError: string | null
+  onRetry?: () => void
+  onSkip?: () => void
 }
 
-export const ErrorDisplay = ({ errors, uploadProgress, uploadError }: ErrorDisplayProps) => {
+export const ErrorDisplay = ({ errors, uploadProgress, uploadError, onRetry, onSkip }: ErrorDisplayProps) => {
   const { t } = useTranslation()
 
   return (
@@ -32,6 +34,20 @@ export const ErrorDisplay = ({ errors, uploadProgress, uploadError }: ErrorDispl
             <Box mt='sm'>
               <Text fw={700}>{t('console.loading.reloading', 'Page will reload in 3 seconds...')}</Text>
             </Box>
+          )}
+          {(onRetry || onSkip) && (
+            <Group mt='sm' gap='xs'>
+              {onRetry && (
+                <Button size='xs' color='yellow' variant='light' onClick={onRetry}>
+                  {t('retry', 'Retry')}
+                </Button>
+              )}
+              {onSkip && (
+                <Button size='xs' color='gray' variant='light' onClick={onSkip}>
+                  {t('skip', 'Continue')}
+                </Button>
+              )}
+            </Group>
           )}
         </Alert>
       )}

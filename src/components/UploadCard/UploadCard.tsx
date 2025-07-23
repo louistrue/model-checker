@@ -34,6 +34,7 @@ export const UploadCard = () => {
     bcf: false,
   })
   const resultsRef = useRef<HTMLDivElement>(null)
+  const lastParams = useRef<{ ifc: File[]; ids: File | null; idsValidation: boolean } | null>(null)
 
   const addLog = (message: string) => {
     setProcessingLogs((prev) => [...prev, message])
@@ -103,9 +104,21 @@ export const UploadCard = () => {
     }
   }
 
+  const handleRetry = async () => {
+    if (lastParams.current) {
+      await processFiles(lastParams.current.ifc, lastParams.current.ids, lastParams.current.idsValidation)
+    }
+  }
+
+  const handleSkip = () => {
+    setUploadError(null)
+  }
+
   const handleClick = async () => {
     setUploadError(null)
     setProcessedResults([])
+
+    lastParams.current = { ifc: ifcFiles, ids: idsFile, idsValidation: isIdsValidation }
 
     if (isIdsValidation && idsFile) {
       if (!ifcFiles.length) return
@@ -168,7 +181,13 @@ export const UploadCard = () => {
             />
           </Box>
 
-          <ErrorDisplay errors={errors} uploadProgress={uploadProgress} uploadError={uploadError} />
+          <ErrorDisplay
+            errors={errors}
+            uploadProgress={uploadProgress}
+            uploadError={uploadError}
+            onRetry={uploadError ? handleRetry : undefined}
+            onSkip={uploadError ? handleSkip : undefined}
+          />
 
           <ProcessingConsole isProcessing={isProcessing} logs={processingLogs} />
 
