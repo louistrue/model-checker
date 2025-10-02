@@ -124,6 +124,7 @@
   "report-format-description": "Select one or both report formats. HTML reports can be viewed and printed directly, while BCF reports can be used in BIM collaboration tools.",
   "view-html": "HTML",
   "download-bcf": "BCF",
+  "downloadHtmlTooltip": "Download HTML report",
   "select-report-format": "Please select at least one report format",
   "report": {
     "summary": "Summary",
@@ -135,6 +136,7 @@
     "name": "Name",
     "description": "Description",
     "warning": "Warning",
+    "failureReason": "Failure Reason",
     "globalId": "GlobalId",
     "tag": "Tag",
     "reportBy": "Report by",
@@ -166,6 +168,15 @@
       "all": "All",
       "data": "data"
     },
+    "allEntityData": "All {{entity}} data",
+    "matchesPattern": "matches the pattern {{pattern}}",
+    "equals": "is {{value}}",
+    "oneOf": "is one of: {{values}}",
+    "range": "is between {{min}} and {{max}}",
+    "greaterOrEqual": "is greater than or equal to {{value}}",
+    "greaterThan": "is greater than {{value}}",
+    "lessOrEqual": "is less than or equal to {{value}}",
+    "lessThan": "is less than {{value}}",
     "phrases": {
       "moreOfSameType": "... {{count}} more of the same element type ({{type}} with Tag {{tag}} and GlobalId {{id}}) not shown ...",
       "moreElementsNotShown": "... {{count}} more {{type}} elements not shown out of {{total}} total ..."
@@ -190,6 +201,7 @@
     "loading": {
       "pyodide": "Loading Pyodide...",
       "pyodideSuccess": "Pyodide loaded successfully",
+      "idsFile": "Reading IDS file content...",
       "translations": "Loading translations...",
       "packages": "Installing required packages...",
       "micropipPatch": "Patching micropip for compatibility check bypass...",

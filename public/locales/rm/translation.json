@@ -117,6 +117,7 @@
   "report-format-description": "Tscherna in u plirs formats da rapport. Rapports HTML pon vegnir vesids e stampads directamain, entant che rapports BCF pon vegnir utilisads en instruments da collavuraziun BIM.",
   "view-html": "HTML",
   "download-bcf": "BCF",
+  "downloadHtmlTooltip": "Telechargiar rapport HTML",
   "select-report-format": "Tscherna almain in format da rapport",
   "report": {
     "summary": "Resumaziun",
@@ -159,6 +160,16 @@
       "all": "Tut",
       "data": "Datas"
     },
+    "allEntityData": "Tut las datas {{entity}}",
+    "matchesPattern": "correspunda al model {{pattern}}",
+    "equals": "è {{value}}",
+    "oneOf": "è in dad: {{values}}",
+    "range": "è tranter {{min}} e {{max}}",
+    "greaterOrEqual": "è pli grond u ugual a {{value}}",
+    "greaterThan": "è pli grond che {{value}}",
+    "lessOrEqual": "è pli pitschen u ugual a {{value}}",
+    "lessThan": "è pli pitschen che {{value}}",
+    "failureReason": "Motiv dal falliment",
     "phrases": {
       "moreOfSameType": "... {{count}} dapli dal medem tip d'element ({{type}} cun Tag {{tag}} ed ID global {{id}}) betg mussads ...",
       "moreElementsNotShown": "... {{count}} ulteriurs elements {{type}} betg mussads ord in total da {{total}} ..."

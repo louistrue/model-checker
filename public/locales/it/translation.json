@@ -117,6 +117,7 @@
   "report-format-description": "Seleziona uno o più formati di rapporto. I rapporti HTML possono essere visualizzati e stampati direttamente, mentre i rapporti BCF possono essere utilizzati negli strumenti di collaborazione BIM.",
   "view-html": "HTML",
   "download-bcf": "BCF",
+  "downloadHtmlTooltip": "Scarica rapporto HTML",
   "select-report-format": "Seleziona almeno un formato di rapporto",
   "report": {
     "summary": "Riepilogo",
@@ -159,6 +160,16 @@
       "all": "Tutti",
       "data": "Dati"
     },
+    "allEntityData": "Tutti i dati {{entity}}",
+    "matchesPattern": "corrisponde al modello {{pattern}}",
+    "equals": "è {{value}}",
+    "oneOf": "è uno di: {{values}}",
+    "range": "è compreso tra {{min}} e {{max}}",
+    "greaterOrEqual": "è maggiore o uguale a {{value}}",
+    "greaterThan": "è maggiore di {{value}}",
+    "lessOrEqual": "è minore o uguale a {{value}}",
+    "lessThan": "è minore di {{value}}",
+    "failureReason": "Motivo del fallimento",
     "phrases": {
       "moreOfSameType": "... {{count}} altri dello stesso tipo di elemento ({{type}} con Tag {{tag}} e ID Globale {{id}}) non mostrati ...",
       "moreElementsNotShown": "... {{count}} altri elementi {{type}} non mostrati su un totale di {{total}} ..."
